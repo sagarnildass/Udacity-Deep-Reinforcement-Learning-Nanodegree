@@ -20,6 +20,8 @@ The state space has 37 dimensions and contains the agent's velocity, along with 
 
 The task is episodic, and in order to solve the environment, your agent must get an average score of +13 over 100 consecutive episodes.
 
+
+
 ### Getting Started
 
 1. Download the environment from one of the links below.  You need only select the environment that matches your operating system:
@@ -36,7 +38,32 @@ The task is episodic, and in order to solve the environment, your agent must get
 
 ### Instructions
 
-Follow the instructions in `Navigation.ipynb` to get started with training your own agent!  
+Follow the instructions in `Navigation.ipynb` to get started with training your own agent! 
+
+**Models** 
+
+If you want to use pretrained models, use the .pth files.
+
+1. DQN - dqn.pth
+
+2. Double DQN - double_dqn.pth
+
+3. Dueling DQN - dueling_dqn.pth
+
+4. Dueling Double DQN - dueling_ddqn.pth
+
+5. DQN with Prioritized Experience Replay - prioritized_exp_replay_dqn.pth
+
+6. Double DQN with Prioritized Experience Replay - prioritized_exp_replay_ddqn.pth
+
+7. Dueling Double DQN with Prioritized Experience Replay - prioritized_exp_replay_dueling_ddqn.pth
+
+### Results
+
+I have trained all the 7 DQNs until the score reaches 15 or 2000 rounds are passed (whichever comes first).
+
+Here are the results.
+
 
 ### (Optional) Challenge: Learning from Pixels
 
