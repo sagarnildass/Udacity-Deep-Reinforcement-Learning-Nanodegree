@@ -18,7 +18,7 @@ The state space has 37 dimensions and contains the agent's velocity, along with 
 - **`2`** - turn left.
 - **`3`** - turn right.
 
-The task is episodic, and in order to solve the environment, your agent must get an average score of +13 over 100 consecutive episodes.
+The task is episodic, and in order to solve the environment, your agent must get an average score of +13 over 100 consecutive episodes. (Though I have increased them to 15.)
 
 
 
@@ -39,6 +39,13 @@ The task is episodic, and in order to solve the environment, your agent must get
 ### Instructions
 
 Follow the instructions in `Navigation.ipynb` to get started with training your own agent! 
+
+### Files
+
+- **model.py** - Contains all the DQN architectures
+- **agent.py** - Contains the RL agent to be used (without prioritized experience replay)
+- **agent_prioritized_exp_replay.py** - Contains the RL agent to be used (with prioritized experience replay) 
+- **1_Navigation_DQN.ipynb** - Main notebook containing the solution
 
 **Models** 
 
@@ -64,6 +71,23 @@ I have trained all the 7 DQNs until the score reaches 15 or 2000 rounds are pass
 
 Here are the results.
 
+![dqn](results/dqn.png) | ![double-dqn](results/double_dqn.png) | ![dueling-dqn](results/dueling_dqn.png) | ![dueling-double-dqn](results/dueling_double_dqn.png) | ![pr-exp-dqn](results/dqn_prioritized_experience_replay.png) | ![pr-exp-ddqn](results/ddqn_prioritized_experience_replay.png) | ![pr-exp-dueling-ddqn](results/dueling_ddqn_prioritized_experience_replay.png)
+
+### Original Papers 
+
+1. [DQN Paper](https://storage.googleapis.com/deepmind-media/dqn/DQNNaturePaper.pdf)
+
+2. [Double DQN Paper](https://arxiv.org/abs/1509.06461)
+
+3. [Prioritized Experience Replay Paper](https://arxiv.org/abs/1511.05952)
+
+4. [Dueling DQN Paper](https://arxiv.org/abs/1511.06581)
+
+5. [Learning from multi-step bootstrap targets paper](https://arxiv.org/abs/1602.01783)
+
+6. [Distributional DQN paper](https://arxiv.org/abs/1707.06887)
+
+7. [Noisy DQN paper](https://arxiv.org/abs/1706.10295)
 
 ### (Optional) Challenge: Learning from Pixels
 
