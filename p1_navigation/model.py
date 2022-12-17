@@ -103,4 +103,4 @@ class QPixelNetwork(nn.Module):
         output = output.view(output.size(0), -1)
         #         print('***', output.size())
         output = self.fc4(output)
-        return
+        return output
