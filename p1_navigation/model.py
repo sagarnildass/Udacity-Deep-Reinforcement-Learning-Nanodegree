@@ -66,32 +66,41 @@ class DuelingQNetwork(nn.Module):
 
 class QPixelNetwork(nn.Module):
     """Actor (Policy) Model."""
-    def __init__(self, action_size, seed):
-        """Initialize parameters and build model.
-        Params
-        ======
-            state_size (int): Dimension of each state
-            action_size (int): Dimension of each action
-            seed (int): Random seed
-        """
-        super(QPixelNetwork, self).__init__()
-        self.seed = torch.manual_seed(seed)
-        self.action_size = action_size
-        self.conv1 = nn.Conv2d(in_channels=1, out_channels=32, kernel_size=8, stride=4, padding=1)
-        self.bn1 = nn.BatchNorm2d(32)
-        self.conv2 = nn.Conv2d(in_channels=32, out_channels=64, kernel_size=4, stride=2, padding=1)
-        self.bn2 = nn.BatchNorm2d(64)
-        self.conv3 = nn.Conv2d(in_channels=64, out_channels=64, kernel_size=3, stride=1, padding=1)
-        self.bn3 = nn.BatchNorm2d(64)
-        self.fc1 = nn.Linear(10*10*64, 512)
-        self.fc2 = nn.Linear(512, self.action_size)
 
-    def forward(self, state):
-        """Build a network that maps state -> action values."""
-        x = self.bn1(F.relu(self.conv1(state)))
-        x = self.bn2(F.relu(self.conv2(x)))
-        x = self.bn3(F.relu(self.conv3(x)))
-        x = x.view(-1, flatten_conv_feature(x))
-        x = F.relu(self.fc1(x))
-        x = self.fc2(x)
+    def __init__(self, state_size, action_size, seed, training):
+        super(QPixelNetwork, self).__init__()
+
+        self.c1 = nn.Conv3d(in_channels=3, out_channels=10, kernel_size=(1, 5, 5), stride=1)
+        self.r1 = nn.ReLU()
+        self.max1 = nn.MaxPool3d((1, 2, 2))
+
+        # (32-5+ 0)/1 + 1 -> 28x28x10 -> 14x14x10
+        # (28-5 +0)+1 -> 24x24x10 -> 12x12x10
+        self.c2 = nn.Conv3d(in_channels=10, out_channels=32, kernel_size=(1, 5, 5), stride=1)
+        self.r2 = nn.ReLU()
+        self.max2 = nn.MaxPool3d((1, 2, 2))
+
+        # 14-5 +1 -> 5x5x32
+        # 12-5 + 1 -> 4x4x32
+        self.fc4 = nn.Linear(4 * 4 * 32 * 3, action_size)
+
+    #         self.r4 = nn.ReLU()
+    #         self.fc5 = nn.Linear(84, action_size)
+
+    def forward(self, img_stack):
+        #         print('-',img_stack.size())
+        output = self.c1(img_stack)
+
+        output = self.r1(output)
+        output = self.max1(output)
+        #         print('*',output.size())
+
+        output = self.c2(output)
+        output = self.r2(output)
+        output = self.max2(output)
+        #         print('**',output.size())
+
+        output = output.view(output.size(0), -1)
+        #         print('***', output.size())
+        output = self.fc4(output)
         return
