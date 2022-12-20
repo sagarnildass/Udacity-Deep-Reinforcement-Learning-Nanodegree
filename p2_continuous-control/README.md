@@ -73,6 +73,10 @@ Follow the instructions in `Continuous_Control.ipynb` to get started with traini
 
 ![Control results](results/control_rewards.png)
 
+### Future Ideas
+
+For the DDPG algorithm, we can tweak different hyperparameters to see which combination gives us the optimal results (like hidden layer sizes, Actor-Critic architecture). We can also try out other algorithms like TRPO, CEM etc.
+
 ### (Optional) Challenge: Crawler Environment
 
 Following is the video of the crawler learning to walk for the optional challenge.
