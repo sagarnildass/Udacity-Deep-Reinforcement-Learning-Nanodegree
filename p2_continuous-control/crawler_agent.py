@@ -222,7 +222,7 @@ class Agent:
         # Compute predictions from states, actions to get value for critic loss and log probabilities for entropy
         predictions = self.network(states, actions)
 
-        # Ratio is product of probability ratios -- store as log probabilities instead
+        # Ratio is product of probability ratios - stored as log probabilities
         ratio = (predictions['log_prob'] - log_probs).sum(-1).exp()
 
         # Compute clipped policy loss (L_clip)
