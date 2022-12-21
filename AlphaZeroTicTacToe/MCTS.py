@@ -23,6 +23,7 @@ t7= lambda x: x[::-1,::-1].T.copy()
 tlist=[t0, t1,t2,t3,t4,t5,t6,t7]
 tlist_half=[t0,t1,t2,t3]
 
+
 def flip(x, dim):
     indices = [slice(None)] * x.dim()
     indices[dim] = torch.arange(x.size(dim) - 1, -1, -1,
@@ -124,7 +125,6 @@ class Node:
 
         current = self
 
-        
         # explore children of the node
         # to speed things up 
         while current.child and current.outcome is None:

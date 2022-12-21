@@ -64,10 +64,6 @@ def get_lines(matrix, loc):
      diag_left = np.concatenate([flat[tr:pos:h-1],flat[pos:bl+1:h-1]])
 
      return hor, ver, diag_right, diag_left
-        
-
-
-
 
 
 class ConnectN:
