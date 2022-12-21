@@ -14,7 +14,7 @@ class Agent:
         self.state_dim = state_dim
         self.action_dim = action_dim
         self.memory = deque(maxlen=100000)
-        self.batch_size = 32
+        self.batch_size = 16
         self.seed = seed
 
         self.exploration_rate = 1
@@ -79,19 +79,19 @@ class Agent:
         reward (float),
         done(bool))
         """
-        # state = torch.FloatTensor(state).cuda() if self.use_cuda else torch.FloatTensor(state)
-        # next_state = torch.FloatTensor(next_state).cuda() if self.use_cuda else torch.FloatTensor(next_state)
-        # action = torch.LongTensor([action]).cuda() if self.use_cuda else torch.LongTensor([action])
-        # reward = torch.DoubleTensor([reward]).cuda() if self.use_cuda else torch.DoubleTensor([reward])
-        # done = torch.BoolTensor([done]).cuda() if self.use_cuda else torch.BoolTensor([done])
+        state = torch.FloatTensor(np.array(state)).cuda() if self.use_cuda else torch.FloatTensor(np.array(state))
+        next_state = torch.FloatTensor(np.array(next_state)).cuda() if self.use_cuda else torch.FloatTensor(np.array(next_state))
+        action = torch.LongTensor([action]).cuda() if self.use_cuda else torch.LongTensor([action])
+        reward = torch.DoubleTensor([reward]).cuda() if self.use_cuda else torch.DoubleTensor([reward])
+        done = torch.BoolTensor([done]).cuda() if self.use_cuda else torch.BoolTensor([done])
 
-        state = torch.from_numpy(np.vstack([state for s in state if s is not None])).float().to(device)
-        action = torch.from_numpy(np.vstack([action for a in action if a is not None])).long().to(device)
-        reward = torch.from_numpy(np.vstack([reward for r in reward if r is not None])).float().to(device)
-        next_state = torch.from_numpy(np.vstack([next_state for ns in next_state if ns is not None])).float().to(
-            device)
-        done = torch.from_numpy(np.vstack([done for d in done if d is not None]).astype(np.uint8)).float().to(
-            device)
+        # state = torch.from_numpy(np.vstack([state for s in state if s is not None])).float().to(device)
+        # action = torch.from_numpy(np.vstack([action for a in action if a is not None])).long().to(device)
+        # reward = torch.from_numpy(np.vstack([reward for r in reward if r is not None])).float().to(device)
+        # next_state = torch.from_numpy(np.vstack([next_state for ns in next_state if ns is not None])).float().to(
+        #     device)
+        # done = torch.from_numpy(np.vstack([done for d in done if d is not None]).astype(np.uint8)).float().to(
+        #     device)
 
         self.memory.append((state, next_state, action, reward, done,))
 

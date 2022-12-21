@@ -1,6 +1,8 @@
 import torch
 from torch import nn
 import copy
+import torch.nn.functional as F
+
 
 
 class MarioNet(nn.Module):
@@ -43,43 +45,32 @@ class MarioNet(nn.Module):
             return self.target(input)
 
 
-class QPixelNetwork(nn.Module):
-    """Actor (Policy) Model."""
+class ActorCritic(nn.Module):
+    def __init__(self, num_inputs, num_actions):
+        super(ActorCritic, self).__init__()
+        self.conv1 = nn.Conv2d(num_inputs, 32, 3, stride=2, padding=1)
+        self.conv2 = nn.Conv2d(32, 32, 3, stride=2, padding=1)
+        self.conv3 = nn.Conv2d(32, 32, 3, stride=2, padding=1)
+        self.conv4 = nn.Conv2d(32, 32, 3, stride=2, padding=1)
+        self.lstm = nn.LSTMCell(32 * 6 * 6, 512)
+        self.critic_linear = nn.Linear(512, 1)
+        self.actor_linear = nn.Linear(512, num_actions)
+        self._initialize_weights()
 
-    def __init__(self, state_size, action_size, seed):
-        super(QPixelNetwork, self).__init__()
-        self.seed = torch.manual_seed(seed)
-        self.c1 = nn.Conv3d(in_channels=3, out_channels=10, kernel_size=(1, 5, 5), stride=1)
-        self.r1 = nn.ReLU()
-        self.max1 = nn.MaxPool3d((1, 2, 2))
+    def _initialize_weights(self):
+        for module in self.modules():
+            if isinstance(module, nn.Conv2d) or isinstance(module, nn.Linear):
+                nn.init.xavier_uniform_(module.weight)
+                # nn.init.kaiming_uniform_(module.weight)
+                nn.init.constant_(module.bias, 0)
+            elif isinstance(module, nn.LSTMCell):
+                nn.init.constant_(module.bias_ih, 0)
+                nn.init.constant_(module.bias_hh, 0)
 
-        # (32-5+ 0)/1 + 1 -> 28x28x10 -> 14x14x10
-        # (28-5 +0)+1 -> 24x24x10 -> 12x12x10
-        self.c2 = nn.Conv3d(in_channels=10, out_channels=32, kernel_size=(1, 5, 5), stride=1)
-        self.r2 = nn.ReLU()
-        self.max2 = nn.MaxPool3d((1, 2, 2))
-
-        # 14-5 +1 -> 5x5x32
-        # 12-5 + 1 -> 4x4x32
-        self.fc4 = nn.Linear(4 * 4 * 32 * 3, action_size)
-
-    #         self.r4 = nn.ReLU()
-    #         self.fc5 = nn.Linear(84, action_size)
-
-    def forward(self, img_stack):
-        #         print('-',img_stack.size())
-        output = self.c1(img_stack)
-
-        output = self.r1(output)
-        output = self.max1(output)
-        #         print('*',output.size())
-
-        output = self.c2(output)
-        output = self.r2(output)
-        output = self.max2(output)
-        #         print('**',output.size())
-
-        output = output.view(output.size(0), -1)
-        #         print('***', output.size())
-        output = self.fc4(output)
-        return output
+    def forward(self, x, hx, cx):
+        x = F.relu(self.conv1(x))
+        x = F.relu(self.conv2(x))
+        x = F.relu(self.conv3(x))
+        x = F.relu(self.conv4(x))
+        hx, cx = self.lstm(x.view(x.size(0), -1), (hx, cx))
+        return self.actor_linear(hx), self.critic_linear(hx), hx, cx
