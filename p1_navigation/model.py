@@ -73,7 +73,7 @@ class QPixelNetwork(nn.Module):
         self.c1 = nn.Conv3d(in_channels=3, out_channels=10, kernel_size=(1, 5, 5), stride=1)
         self.r1 = nn.ReLU()
         self.max1 = nn.MaxPool3d((1, 2, 2))
-
+        # [(W−K+2P)/S]+1
         # (32-5+ 0)/1 + 1 -> 28x28x10 -> 14x14x10
         # (28-5 +0)+1 -> 24x24x10 -> 12x12x10
         self.c2 = nn.Conv3d(in_channels=10, out_channels=32, kernel_size=(1, 5, 5), stride=1)

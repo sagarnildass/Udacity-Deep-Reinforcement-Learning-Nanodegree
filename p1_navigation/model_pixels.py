@@ -1,36 +1,52 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from pixel_utils import flatten_conv_feature
 
-class QPixelNetwork(nn.Module):
-    """Actor (Policy) Model."""
-    def __init__(self, action_size, seed):
-        """Initialize parameters and build model.
-        Params
-        ======
-            state_size (int): Dimension of each state
-            action_size (int): Dimension of each action
-            seed (int): Random seed
-        """
-        super(QPixelNetwork, self).__init__()
-        self.seed = torch.manual_seed(seed)
-        self.action_size = action_size
-        self.conv1 = nn.Conv2d(in_channels=1, out_channels=32, kernel_size=8, stride=4, padding=1)
-        self.bn1 = nn.BatchNorm2d(32)
-        self.conv2 = nn.Conv2d(in_channels=32, out_channels=64, kernel_size=4, stride=2, padding=1)
-        self.bn2 = nn.BatchNorm2d(64)
-        self.conv3 = nn.Conv2d(in_channels=64, out_channels=64, kernel_size=3, stride=1, padding=1)
-        self.bn3 = nn.BatchNorm2d(64)
-        self.fc1 = nn.Linear(10*10*64, 512)
-        self.fc2 = nn.Linear(512, self.action_size)
 
-    def forward(self, state):
-        """Build a network that maps state -> action values."""
-        x = self.bn1(F.relu(self.conv1(state)))
-        x = self.bn2(F.relu(self.conv2(x)))
-        x = self.bn3(F.relu(self.conv3(x)))
-        x = x.view(-1, flatten_conv_feature(x))
-        x = F.relu(self.fc1(x))
-        x = self.fc2(x)
-        return x
+class QNetwork(nn.Module):
+    """QNetwork.
+
+    Simple Dense neural network
+    to serve as funcction approximator.
+    """
+
+    def __init__(
+            self,
+            action_size,
+            seed,
+            in_channels=3,
+            conv1_kernel=3,
+            conv1_filters=16,
+            conv1_strides=1,
+            conv2_kernel=3,
+            conv2_filters=32,
+            conv2_strides=1,
+            fc1_units=512,
+            fc2_units=512
+    ):
+        super(QNetwork, self).__init__()
+        self.seed = seed
+        self.network = nn.Sequential(
+            nn.Conv2d(in_channels, conv1_filters, kernel_size=conv1_kernel, stride=conv1_strides, padding=1),
+            nn.BatchNorm2d(conv1_filters),
+            nn.ReLU(),
+            nn.MaxPool2d(kernel_size=2, stride=2),
+
+            nn.Conv2d(conv1_filters, conv2_filters, kernel_size=conv2_kernel, stride=conv2_strides, padding=1),
+            nn.BatchNorm2d(conv2_filters),
+            nn.ReLU(),
+            nn.MaxPool2d(kernel_size=2, stride=2),
+
+            nn.Flatten(),
+            nn.Linear(conv2_filters * 21 * 21, fc1_units),
+            nn.BatchNorm1d(fc1_units),
+            nn.ReLU(),
+            nn.Linear(fc1_units, fc2_units),
+            nn.BatchNorm1d(fc2_units),
+            nn.ReLU(),
+            nn.Linear(fc2_units, action_size)
+        )
+
+    def forward(self, x):
+        # print(self.network(x).shape)
+        return self.network(x)
